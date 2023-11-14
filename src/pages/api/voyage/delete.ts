@@ -6,7 +6,7 @@ export type ReturnType = (Voyage & { vessel: Vessel })[];
 
 const handler: NextApiHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<undefined>
+  res: NextApiResponse
 ) => {
   if (req.method === "DELETE") {
     // randomly fail the delete request

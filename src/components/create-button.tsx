@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -8,21 +8,24 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Button } from "./ui/button";
+import CreateVoyageForm from "./create-form";
 
 const CreateVoyageButton = () => {
+  const [open, setOpen] = useState<boolean>(false);
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="secondary">Create</Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Are you sure absolutely sure?</SheetTitle>
+          <SheetTitle>Create a new Voyage</SheetTitle>
           <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This action will create a new voyage. Fill out the form below and
+            submit by clicking create.
           </SheetDescription>
         </SheetHeader>
+        <CreateVoyageForm setOpen={setOpen} />
       </SheetContent>
     </Sheet>
   );
