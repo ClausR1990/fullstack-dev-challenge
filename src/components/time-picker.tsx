@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEventHandler, useState } from "react";
 import { format } from "date-fns";
 
 import { cn } from "src/utils";
@@ -9,11 +9,16 @@ export interface TimePickerProps
 }
 
 export const TimePicker = React.forwardRef<HTMLInputElement, TimePickerProps>(
-  ({ className, defaultTime, ...props }, ref) => {
+  ({ className, defaultTime, onChange, ...props }, ref) => {
     const defaultValue = defaultTime
       ? new Date(defaultTime)
       : new Date(Date.now());
-    console.log(defaultValue);
+    const [date, setDate] = useState<string>(format(defaultValue, "HH:mm"));
+
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+      onChange && onChange(e);
+      setDate(e.target.value);
+    };
     return (
       <input
         className={cn(
@@ -23,7 +28,8 @@ export const TimePicker = React.forwardRef<HTMLInputElement, TimePickerProps>(
         ref={ref}
         {...props}
         type="time"
-        value={format(defaultValue, "HH:mm")}
+        value={date}
+        onChange={handleChange}
       />
     );
   }

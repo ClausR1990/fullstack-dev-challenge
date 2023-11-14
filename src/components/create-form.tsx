@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Checkbox } from "~/components/ui/checkbox";
 import { RangeCalendar } from "./range-calendar";
 import { toast } from "./ui/use-toast";
 import { VoyageCreatePayload } from "~/pages/api/voyage/create";
@@ -46,6 +47,9 @@ const formSchema = z.object({
   vesselId: z.string({
     required_error: "Please provide the Vessel",
   }),
+  unitTypes: z.array(z.string()).min(5, {
+    message: "Please provide minimum 5 Unit Types",
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -55,15 +59,23 @@ type CreateFormProps = {
 };
 
 const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
+  const { data: combinedData, isLoading } = useQuery(
+    ["combinedData"],
+    async () => {
+      const [vesselsData, unitTypesData] = await Promise.all<
+        [Promise<VesselReturnType>, Promise<UnitTypeReturnType>]
+      >([fetchData("voyage/getVessels"), fetchData("voyage/getUnittypes")]);
+
+      // You can return an object containing both data sets
+      return { vessels: vesselsData, unitTypes: unitTypesData };
+    }
+  );
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      unitTypes: [],
+    },
   });
-  const { data: vessels } = useQuery<VesselReturnType>(["vessels"], () =>
-    fetchData("voyage/getVessels")
-  );
-  const { data: unitTypes } = useQuery<UnitTypeReturnType>(["unittypes"], () =>
-    fetchData("voyage/getUnitTypes")
-  );
 
   const queryClient = useQueryClient();
   const mutation = useMutation(
@@ -104,10 +116,15 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
         values.departureAndArrival.from
       ).toISOString(),
       scheduledArrival: new Date(values.departureAndArrival.to).toISOString(),
+      unitTypes: values.unitTypes,
     };
 
     mutation.mutate(payload);
   };
+
+  if (isLoading) {
+    return <div>...loading</div>;
+  }
 
   return (
     <Form {...form}>
@@ -187,7 +204,7 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {vessels?.map((vessel, index) => (
+                  {combinedData?.vessels?.map((vessel, index) => (
                     <SelectItem key={index} value={vessel.id}>
                       {vessel.name}
                     </SelectItem>
@@ -196,6 +213,54 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
               </Select>
               <FormDescription>Select the Vessel</FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="unitTypes"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Unit Types</FormLabel>
+                <FormDescription>
+                  Select the Unit Types you want for the Voyage.
+                </FormDescription>
+              </div>
+              {combinedData?.unitTypes?.map((unitType) => (
+                <FormField
+                  key={unitType.id}
+                  control={form.control}
+                  name="unitTypes"
+                  render={({ field }) => {
+                    console.log("😊", field.value);
+                    return (
+                      <FormItem
+                        key={unitType.id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(unitType.id)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, unitType.id])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== unitType.id
+                                    )
+                                  );
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          {unitType.name}
+                        </FormLabel>
+                      </FormItem>
+                    );
+                  }}
+                />
+              ))}
             </FormItem>
           )}
         />

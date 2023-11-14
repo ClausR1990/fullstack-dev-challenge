@@ -8,6 +8,7 @@ const payload = z.object({
   vesselId: z.string(),
   scheduledDeparture: z.string(),
   scheduledArrival: z.string(),
+  unitTypes: z.array(z.string()),
 });
 
 export type VoyageCreatePayload = z.infer<typeof payload>;
@@ -26,8 +27,15 @@ const handler: NextApiHandler = async (
 
     const parsedBody = await payload.parseAsync(body);
 
+    const { unitTypes, ...restData } = parsedBody;
+
     const createVoyage = await prisma.voyage.create({
-      data: parsedBody,
+      data: {
+        ...restData,
+        unitTypes: {
+          connect: unitTypes.map((unitType) => ({ id: unitType })),
+        },
+      },
     });
 
     if (!createVoyage) {

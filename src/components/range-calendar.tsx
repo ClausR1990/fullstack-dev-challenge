@@ -1,4 +1,9 @@
-import React, { FormEvent, useEffect } from "react";
+import React, {
+  ChangeEventHandler,
+  FormEvent,
+  useEffect,
+  useState,
+} from "react";
 import { addHours, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -21,19 +26,37 @@ export const RangeCalendar = ({
     to: addHours(new Date(), 18),
   });
 
+  const TimeSelect = () => {
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+      const [hours = 0, minutes = 0] = e.target.value.split(":").map(Number);
+      const currentDate = date![e.target.name as keyof typeof date] as Date;
+      setDate({
+        ...date!,
+        [e.target.name]: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate(),
+          hours,
+          minutes
+        ),
+      });
+    };
+    return (
+      <div className="flex items-center justify-between gap-2 p-3 pt-0">
+        <TimePicker
+          name="from"
+          defaultTime={date?.from}
+          onChange={handleChange}
+        />
+        <TimePicker name="to" defaultTime={date?.to} onChange={handleChange} />
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (!onChange) return;
     onChange(date as unknown as FormEvent<HTMLInputElement>);
   }, [date]);
-
-  const TimeSelect = () => {
-    return (
-      <div className="flex items-center justify-between gap-2 p-3 pt-0">
-        <TimePicker defaultTime={date?.from} />
-        <TimePicker defaultTime={date?.to} />
-      </div>
-    );
-  };
 
   return (
     <div className={cn("grid gap-2", className)}>
