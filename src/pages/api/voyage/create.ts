@@ -23,8 +23,6 @@ const handler: NextApiHandler = async (
     }
     const body = JSON.parse(req.body) as VoyageCreatePayload;
 
-    console.log("💯", body);
-
     const parsedBody = await payload.parseAsync(body);
 
     const { unitTypes, ...restData } = parsedBody;

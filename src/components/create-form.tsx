@@ -232,33 +232,30 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
                   key={unitType.id}
                   control={form.control}
                   name="unitTypes"
-                  render={({ field }) => {
-                    console.log("😊", field.value);
-                    return (
-                      <FormItem
-                        key={unitType.id}
-                        className="flex flex-row items-start space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(unitType.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, unitType.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== unitType.id
-                                    )
-                                  );
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          {unitType.name}
-                        </FormLabel>
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem
+                      key={unitType.id}
+                      className="flex flex-row items-start space-x-3 space-y-0"
+                    >
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value?.includes(unitType.id)}
+                          onCheckedChange={(checked) => {
+                            return checked
+                              ? field.onChange([...field.value, unitType.id])
+                              : field.onChange(
+                                  field.value?.filter(
+                                    (value) => value !== unitType.id
+                                  )
+                                );
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        {unitType.name}
+                      </FormLabel>
+                    </FormItem>
+                  )}
                 />
               ))}
             </FormItem>
