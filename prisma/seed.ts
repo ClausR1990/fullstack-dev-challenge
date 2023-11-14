@@ -152,6 +152,19 @@ const unitTypes: UnitType[] = [
 ];
 
 async function main() {
+  // Seeding units based on the predefined unitTypes array
+  for (let i = 0; i < 10; i++) {
+    const unitType = unitTypes[i % unitTypes.length]; // Loop back to start if i >= unitTypes.length
+
+    unitType &&
+      (await prisma.unitType.create({
+        data: {
+          name: unitType.name,
+          defaultLength: unitType.length, // Using 'length' as default length
+        },
+      }));
+  }
+
   const crownSeaways = await prisma.vessel.create({
     data: {
       name: "Crown Seaways",
@@ -178,11 +191,21 @@ async function main() {
       setHours(addDays(new Date(), i + 1), 9)
     );
 
+    const getRandomUnitTypeId = async (): Promise<
+      UnitType["id"] | undefined
+    > => {
+      const unitypesArray = await prisma.unitType.findMany({});
+      const randomIndex = Math.floor(Math.random() * unitypesArray.length);
+      console.log("🤣", unitypesArray[randomIndex]);
+      return unitypesArray[randomIndex]?.id;
+    };
+
     await prisma.voyage.create({
       data: {
         portOfLoading: "Copenhagen",
         portOfDischarge: "Oslo",
         vesselId: departingFromCopenhagenVessel,
+        unitTypeId: `${await getRandomUnitTypeId()}` ?? "",
         scheduledDeparture,
         scheduledArrival,
       },
@@ -193,23 +216,11 @@ async function main() {
         portOfLoading: "Oslo",
         portOfDischarge: "Copenhagen",
         vesselId: departingFromOsloVessel,
+        unitTypeId: `${await getRandomUnitTypeId()}` ?? "",
         scheduledDeparture,
         scheduledArrival,
       },
     });
-  }
-
-  // Seeding units based on the predefined unitTypes array
-  for (let i = 0; i < 10; i++) {
-    const unitType = unitTypes[i % unitTypes.length]; // Loop back to start if i >= unitTypes.length
-
-    unitType &&
-      (await prisma.unitType.create({
-        data: {
-          name: unitType.name,
-          defaultLength: unitType.length, // Using 'length' as default length
-        },
-      }));
   }
 }
 

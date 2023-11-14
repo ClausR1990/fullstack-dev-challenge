@@ -6,6 +6,7 @@ const payload = z.object({
   portOfLoading: z.string(),
   portOfDischarge: z.string(),
   vesselId: z.string(),
+  unitTypeId: z.string(),
   scheduledDeparture: z.string(),
   scheduledArrival: z.string(),
 });

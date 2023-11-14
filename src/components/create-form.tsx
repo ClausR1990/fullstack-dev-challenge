@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import RangeCalendar from "./range-calendar";
+import { RangeCalendar } from "./range-calendar";
 import { toast } from "./ui/use-toast";
 import { VoyageCreatePayload } from "~/pages/api/voyage/create";
 
@@ -57,7 +57,7 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-  const { data: vessels, error } = useQuery<ReturnType>(["vessels"], () =>
+  const { data: vessels } = useQuery<ReturnType>(["vessels"], () =>
     fetchData("voyage/getVessels")
   );
 
@@ -104,10 +104,6 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
 
     mutation.mutate(payload);
   };
-
-  if (error) {
-    return <div>Failed to get Vessels</div>;
-  }
 
   return (
     <Form {...form}>

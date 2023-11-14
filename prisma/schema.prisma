@@ -24,17 +24,20 @@ model Voyage {
     portOfLoading      String
     portOfDischarge    String
     vesselId           String
+    unitTypeId         String
     scheduledDeparture DateTime
     scheduledArrival   DateTime
     vessel             Vessel   @relation(fields: [vesselId], references: [id])
+    unittype           UnitType @relation(fields: [unitTypeId], references: [id])
     createdAt          DateTime @default(now())
     updatedAt          DateTime @updatedAt
 }
 
 model UnitType {
-  id                 String   @id @default(cuid())
-  name               String
-  defaultLength      Float
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+    id            String   @id @default(cuid())
+    name          String
+    defaultLength Float
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    Voyage        Voyage[]
 }
