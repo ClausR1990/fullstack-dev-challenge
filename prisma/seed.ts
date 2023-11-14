@@ -191,23 +191,27 @@ async function main() {
       setHours(addDays(new Date(), i + 1), 9)
     );
 
-    const getRandomUnitTypeId = async (): Promise<
-      UnitType["id"] | undefined
-    > => {
-      const unitypesArray = await prisma.unitType.findMany({});
-      const randomIndex = Math.floor(Math.random() * unitypesArray.length);
-      console.log("🤣", unitypesArray[randomIndex]);
-      return unitypesArray[randomIndex]?.id;
+    const getUnitType = async () => {
+      const unitTypesArray = await prisma.unitType.findMany({
+        take: 5,
+      });
+      return unitTypesArray;
     };
 
     await prisma.voyage.create({
       data: {
         portOfLoading: "Copenhagen",
         portOfDischarge: "Oslo",
-        vesselId: departingFromCopenhagenVessel,
-        unitTypeId: `${await getRandomUnitTypeId()}` ?? "",
         scheduledDeparture,
         scheduledArrival,
+        vessel: {
+          connect: { id: departingFromCopenhagenVessel },
+        },
+        unitTypes: {
+          connect: (
+            await getUnitType()
+          ).map((unitType) => ({ id: unitType.id })),
+        },
       },
     });
 
@@ -215,10 +219,16 @@ async function main() {
       data: {
         portOfLoading: "Oslo",
         portOfDischarge: "Copenhagen",
-        vesselId: departingFromOsloVessel,
-        unitTypeId: `${await getRandomUnitTypeId()}` ?? "",
         scheduledDeparture,
         scheduledArrival,
+        vessel: {
+          connect: { id: departingFromOsloVessel },
+        },
+        unitTypes: {
+          connect: (
+            await getUnitType()
+          ).map((unitType) => ({ id: unitType.id })),
+        },
       },
     });
   }

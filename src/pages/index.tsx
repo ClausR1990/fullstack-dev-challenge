@@ -10,6 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { fetchData } from "~/utils";
 import type { ReturnType } from "./api/voyage/getAll";
 import { Button } from "~/components/ui/button";
@@ -51,7 +56,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Voyages | DFDS</title>
+        <title>Voyages | DFDS</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
@@ -82,7 +87,27 @@ export default function Home() {
                 <TableCell>{voyage.portOfLoading}</TableCell>
                 <TableCell>{voyage.portOfDischarge}</TableCell>
                 <TableCell>{voyage.vessel.name}</TableCell>
-                <TableCell>{voyage.unittype.name}</TableCell>
+                <TableCell>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        {voyage.unitTypes.length}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <ul className="p-3">
+                        {voyage.unitTypes.map((unitType, index) => (
+                          <li key={index} className="border-b-2">
+                            <ul className="list-disc">
+                              <li>{unitType.name}</li>
+                              <li>{unitType.defaultLength}</li>
+                            </ul>
+                          </li>
+                        ))}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                </TableCell>
                 <TableCell>
                   <Button
                     onClick={() => handleDelete(voyage.id)}

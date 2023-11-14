@@ -1,10 +1,11 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { type Dispatch, type SetStateAction } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { fetchData } from "~/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ReturnType } from "../pages/api/voyage/getVessels";
+import type { ReturnType as VesselReturnType } from "../pages/api/voyage/getVessels";
+import type { ReturnType as UnitTypeReturnType } from "../pages/api/voyage/getUnittypes";
 
 import { Button } from "./ui/button";
 import {
@@ -57,8 +58,11 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-  const { data: vessels } = useQuery<ReturnType>(["vessels"], () =>
+  const { data: vessels } = useQuery<VesselReturnType>(["vessels"], () =>
     fetchData("voyage/getVessels")
+  );
+  const { data: unitTypes } = useQuery<UnitTypeReturnType>(["unittypes"], () =>
+    fetchData("voyage/getUnitTypes")
   );
 
   const queryClient = useQueryClient();

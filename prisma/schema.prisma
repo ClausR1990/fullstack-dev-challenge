@@ -13,24 +13,23 @@ datasource db {
 
 model Vessel {
     id        String   @id @default(cuid())
-    name      String
+    name      String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     voyages   Voyage[]
 }
 
 model Voyage {
-    id                 String   @id @default(cuid())
+    id                 String     @id @default(cuid())
     portOfLoading      String
     portOfDischarge    String
     vesselId           String
-    unitTypeId         String
     scheduledDeparture DateTime
     scheduledArrival   DateTime
-    vessel             Vessel   @relation(fields: [vesselId], references: [id])
-    unittype           UnitType @relation(fields: [unitTypeId], references: [id])
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @updatedAt
+    vessel             Vessel     @relation(fields: [vesselId], references: [id])
+    createdAt          DateTime   @default(now())
+    updatedAt          DateTime   @updatedAt
+    unitTypes          UnitType[]
 }
 
 model UnitType {
@@ -39,5 +38,5 @@ model UnitType {
     defaultLength Float
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
-    Voyage        Voyage[]
+    voyages       Voyage[]
 }
