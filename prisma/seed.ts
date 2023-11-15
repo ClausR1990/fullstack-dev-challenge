@@ -152,6 +152,19 @@ const unitTypes: UnitType[] = [
 ];
 
 async function main() {
+  // Seeding units based on the predefined unitTypes array
+  for (let i = 0; i < 10; i++) {
+    const unitType = unitTypes[i % unitTypes.length]; // Loop back to start if i >= unitTypes.length
+
+    unitType &&
+      (await prisma.unitType.create({
+        data: {
+          name: unitType.name,
+          defaultLength: unitType.length, // Using 'length' as default length
+        },
+      }));
+  }
+
   const crownSeaways = await prisma.vessel.create({
     data: {
       name: "Crown Seaways",
@@ -178,13 +191,27 @@ async function main() {
       setHours(addDays(new Date(), i + 1), 9)
     );
 
+    const getUnitType = async () => {
+      const unitTypesArray = await prisma.unitType.findMany({
+        take: 5,
+      });
+      return unitTypesArray;
+    };
+
     await prisma.voyage.create({
       data: {
         portOfLoading: "Copenhagen",
         portOfDischarge: "Oslo",
-        vesselId: departingFromCopenhagenVessel,
         scheduledDeparture,
         scheduledArrival,
+        vessel: {
+          connect: { id: departingFromCopenhagenVessel },
+        },
+        unitTypes: {
+          connect: (
+            await getUnitType()
+          ).map((unitType) => ({ id: unitType.id })),
+        },
       },
     });
 
@@ -192,24 +219,18 @@ async function main() {
       data: {
         portOfLoading: "Oslo",
         portOfDischarge: "Copenhagen",
-        vesselId: departingFromOsloVessel,
         scheduledDeparture,
         scheduledArrival,
+        vessel: {
+          connect: { id: departingFromOsloVessel },
+        },
+        unitTypes: {
+          connect: (
+            await getUnitType()
+          ).map((unitType) => ({ id: unitType.id })),
+        },
       },
     });
-  }
-
-  // Seeding units based on the predefined unitTypes array
-  for (let i = 0; i < 10; i++) {
-    const unitType = unitTypes[i % unitTypes.length]; // Loop back to start if i >= unitTypes.length
-
-    unitType &&
-      (await prisma.unitType.create({
-        data: {
-          name: unitType.name,
-          defaultLength: unitType.length, // Using 'length' as default length
-        },
-      }));
   }
 }
 

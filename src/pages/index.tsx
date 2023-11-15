@@ -10,12 +10,20 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { fetchData } from "~/utils";
 import type { ReturnType } from "./api/voyage/getAll";
 import { Button } from "~/components/ui/button";
 import { TABLE_DATE_FORMAT } from "~/constants";
+import { useToast } from "~/components/ui/use-toast";
+import CreateVoyageButton from "~/components/create-button";
 
 export default function Home() {
+  const { toast } = useToast();
   const { data: voyages } = useQuery<ReturnType>(["voyages"], () =>
     fetchData("voyage/getAll")
   );
@@ -28,6 +36,10 @@ export default function Home() {
       });
 
       if (!response.ok) {
+        toast({
+          title: "Failed to delete the voyage",
+          description: "Please try again!",
+        });
         throw new Error("Failed to delete the voyage");
       }
     },
@@ -45,10 +57,13 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Voyages | DFDS</title>
+        <title>Voyages | DFDS</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
+        <section className="w-full py-4">
+          <CreateVoyageButton />
+        </section>
         <Table>
           <TableHeader>
             <TableRow>
@@ -57,6 +72,7 @@ export default function Home() {
               <TableHead>Port of loading</TableHead>
               <TableHead>Port of discharge</TableHead>
               <TableHead>Vessel</TableHead>
+              <TableHead>Unit Type</TableHead>
               <TableHead>&nbsp;</TableHead>
             </TableRow>
           </TableHeader>
@@ -75,6 +91,27 @@ export default function Home() {
                 <TableCell>{voyage.portOfLoading}</TableCell>
                 <TableCell>{voyage.portOfDischarge}</TableCell>
                 <TableCell>{voyage.vessel.name}</TableCell>
+                <TableCell>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        {voyage.unitTypes.length}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <ul className="p-3">
+                        {voyage.unitTypes.map((unitType, index) => (
+                          <li key={index} className="border-b-2">
+                            <ul className="list-disc">
+                              <li>Name: {unitType.name}</li>
+                              <li>Length: {unitType.defaultLength}</li>
+                            </ul>
+                          </li>
+                        ))}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                </TableCell>
                 <TableCell>
                   <Button
                     onClick={() => handleDelete(voyage.id)}
