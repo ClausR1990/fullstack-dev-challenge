@@ -128,7 +128,11 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-3"
+        noValidate
+      >
         <FormField
           control={form.control}
           name="departureAndArrival"
@@ -149,6 +153,7 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  required
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -174,6 +179,7 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  required
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -197,7 +203,11 @@ const CreateVoyageForm = ({ setOpen }: CreateFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Vessel</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                required
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select the Vessel" />

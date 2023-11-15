@@ -20,6 +20,7 @@ import type { ReturnType } from "./api/voyage/getAll";
 import { Button } from "~/components/ui/button";
 import { TABLE_DATE_FORMAT } from "~/constants";
 import { useToast } from "~/components/ui/use-toast";
+import CreateVoyageButton from "~/components/create-button";
 
 export default function Home() {
   const { toast } = useToast();
@@ -60,6 +61,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
+        <section className="w-full py-4">
+          <CreateVoyageButton />
+        </section>
         <Table>
           <TableHeader>
             <TableRow>
@@ -99,8 +103,8 @@ export default function Home() {
                         {voyage.unitTypes.map((unitType, index) => (
                           <li key={index} className="border-b-2">
                             <ul className="list-disc">
-                              <li>{unitType.name}</li>
-                              <li>{unitType.defaultLength}</li>
+                              <li>Name: {unitType.name}</li>
+                              <li>Length: {unitType.defaultLength}</li>
                             </ul>
                           </li>
                         ))}

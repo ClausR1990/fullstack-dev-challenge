@@ -15,7 +15,7 @@ const CreateVoyageButton = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="secondary">Create</Button>
+        <Button variant="default">Create</Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
